@@ -25,23 +25,31 @@ class Product extends Component {
     render() {
         return (
             <Fragment>
-                <h1>Products</h1>
+                {/* <h1 className="my-4">Products</h1> */}
+                <div className="row mt-5">
                 {
                     this.state.products.map((p) => {
                         return (
-                            <div className="product" key={p.id}>
-                                <img className="product__image" src={p.image} alt="" />
-                                <p className="product__title">{p.name}</p>
-                                <p className="product__desc">{p.desc}</p>
-                                <p className="product__price">Rp. {p.price},00-</p>
-                                <p className="product__cap">{p.capacity}{p.type}</p>
+                            <div className="card col-lg-3 product" key={p.id}>
+                                <div className="card-body">
+                                    <img className="product__image mb-4" src={p.image} alt="" />
+                                    <hr />
+                                    <p className="product__price">Harga : Rp. {p.price},00-</p>
+                                    <hr />
+                                    <p className="product__cap">Capacity : {p.capacity}{p.type}</p>
+                                    <hr />
+                                    <p className="product__title">{p.name}</p>
+                                    <p className="product__desc">{p.desc}</p>
+                                </div>
+                                
                                 <Link to={`/product/${p.id}`} state={ p }>
-                                    <button className="btn btn-primary">Detail</button>
+                                    <button style={{width: '100%'}} className="btn btn-primary">Detail</button>
                                 </Link>
                             </div>
                         )
                     })
                 }
+                </div>
             </Fragment>
         )
     }
