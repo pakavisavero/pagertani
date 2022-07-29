@@ -1,5 +1,6 @@
 import axios from "axios";
 import { Component, Fragment } from "react";
+import { Link, NavLink } from "react-router-dom";
 import "./Product.css";
 
 class Product extends Component {
@@ -16,7 +17,7 @@ class Product extends Component {
             console.log(error);
         })
     }
-
+ 
     componentDidMount() {
         this.getProductAPI();
     }
@@ -34,7 +35,9 @@ class Product extends Component {
                                 <p className="product__desc">{p.desc}</p>
                                 <p className="product__price">Rp. {p.price},00-</p>
                                 <p className="product__cap">{p.capacity}{p.type}</p>
-                                <hr />
+                                <Link to={`/product/${p.id}`} state={ p }>
+                                    <button className="btn btn-primary">Detail</button>
+                                </Link>
                             </div>
                         )
                     })
