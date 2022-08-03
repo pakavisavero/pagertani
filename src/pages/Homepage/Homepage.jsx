@@ -5,7 +5,7 @@ class Homepage extends Component {
     render() {
         return (
             <Fragment>
-                <h1>Homepage</h1>
+                <h1>Selamat datang di situs Pagertani</h1>
             </Fragment>
         )
     }

@@ -3,9 +3,12 @@ import styles from './ProductCart.module.css';
 import { CartValue } from '../../../state/CartState';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
+import ShowToast from '../../../component/toast/ShowToast';
+import Toast from '../../../component/toast/Toast';
 
 function ProductCard(props) {
     const { cart, setCart } = useContext(CartValue);
+    const [toast, setToast] = useState([]);
     const { products } = props;
 
     const onChangeVal = (id, num) => (event) => {
@@ -31,6 +34,7 @@ function ProductCard(props) {
             value: val,
 
         }).then((res) => {
+            setToast([ShowToast('success', "Add product succeed!")]);
             getCart();
         
         }).catch(function (error) {
@@ -69,7 +73,7 @@ function ProductCard(props) {
                     return (
                         <div className={`card col-lg-3 ${styles.product}`} key={p.id}>
                             <div className="card-body">
-                                <img className={styles.product__image} src={p.image} alt="" />
+                                <img className={styles.product__image} src={`/images/${p.image}`} alt="" />
                                 <hr />
                                 <p className={styles.product__price}>Harga : Rp. {p.price},00-</p>
                                 <hr />
@@ -101,6 +105,8 @@ function ProductCard(props) {
                 })
             }
             </div>
+
+            <Toast toastlist={toast} position="buttom-right"/>
         </Fragment>
     )
 }
