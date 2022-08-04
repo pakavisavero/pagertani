@@ -4,11 +4,24 @@ import Toast from "../../component/toast/Toast";
 import { CartValue } from "../../state/CartState";
 import styles from './Cart.module.css';
 import ShowToast from "../../component/toast/ShowToast";
-const { Component, Fragment, useContext, useState } = require("react");
+const { Component, Fragment, useContext, useState, useEffect } = require("react");
 
 function Cart(props) {
     const { cart, setCart } = useContext(CartValue);
     const [toast, setToast] = useState([]);
+    const [check, setCheck] = useState([]);
+    const [totalPrice, setTotalPrice] = useState(0);
+    const [disabled, setDisabled] = useState(true);
+
+    useEffect(() => {
+        if (check.length > 0) {
+            setDisabled(false);
+        } else {
+            setDisabled(true);
+        }
+
+        console.log(check);
+    }, [check]);
 
     const getCart = () => {
         axios.get("http://127.0.0.1:8000/api/v1/carts").then((res) => {
@@ -18,13 +31,44 @@ function Cart(props) {
         })
     }
 
-    const deleteCart = (id) => {
+    const deleteCart = (c) => {
         axios.post("http://127.0.0.1:8000/api/v1/delete-cart", {
-            id: id
+            id: c.id
 
         }).then((res) => {
             console.log("Masuk sini");
             setToast([ShowToast('success', "Delete data succeed!")]);
+            setTotalPrice(prev => prev - (c.price * c.amount));
+            getCart();
+
+        }).catch(function (error) {
+            console.log(error);
+        })
+    }
+
+    const checkCart = (c) => { 
+        const value = check.filter((x) => x.id == c.id);
+
+        if (value.length > 0) {
+            const value = check.filter((x) => x.id != c.id);
+            setTotalPrice(prev => prev - (c.price * c.amount));
+            setCheck(prevs => [...value]);
+
+        } else {
+            setTotalPrice(prev => prev + (c.price * c.amount));
+            setCheck(prevs => [...prevs, {
+                "id": c.id,
+                "total_price": c.price * c.amount
+            }]);
+        }
+    }
+
+    const checkout = () => { 
+        axios.post("http://127.0.0.1:8000/api/v1/checkout", {
+            id: check
+
+        }).then((res) => {
+            setToast([ShowToast('success', "Checkout succeed!")]);
             getCart();
 
         }).catch(function (error) {
@@ -34,37 +78,56 @@ function Cart(props) {
 
     return (
         <Fragment>
-            <table className="table">
-                <thead>
-                    <tr>
-                        <th>Image</th>
-                        <th>Product</th>
-                        <th>Amount</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {
-                        cart.map((c) => {
-                            return (
-                                <tr key={c.id}>
-                                    <td>
-                                        <img style={{"width": "60px", "height": "60px"}} src={`/images/${c.image}`} alt="" />
-                                    </td>
-                                    <td>{c.name}</td>
-                                    <td>{c.amount}</td>
-                                    <td>
-                                        <button onClick={() => deleteCart(c.id)} className="btn btn-secondary btn-sm">Delete</button>
-                                    </td>
-                                </tr>
-                            )
-                        })
-                    }
+            {cart.length > 0 ? (
+                <div>
+                    <table className="table table-responsive-sm">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>Image</th>
+                                <th>Product</th>
+                                <th>Price</th>
+                                <th>Amount</th>
+                                <th>Total Price</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {
+                                cart.map((c) => {
+                                    return (
+                                        <tr key={c.id}>
+                                            <td>
+                                                <div className="form-check">
+                                                    <input style={{ "width": "20px", "height": "20px" }} className="form-check-input" type="checkbox" onChange={() => checkCart(c)} />
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <img style={{"width": "60px", "height": "60px"}} src={`/images/${c.image}`} alt="" />
+                                            </td>
+                                            <td>{c.name}</td>
+                                            <td>Rp. {c.price}</td>
+                                            <td>{c.amount}{c.type}</td>
+                                            <td>Rp. {c.price * c.amount}</td>
+                                            <td>
+                                                <button onClick={() => deleteCart(c)} className="btn btn-secondary btn-sm">Delete</button>
+                                            </td>
+                                        </tr>
+                                    )
+                                })
+                            }
+                        </tbody>
+                    </table>
 
-                    <button className="btn btn-primary mt-4">Checkout</button>
-                    <Toast toastlist={toast} position="buttom-right"/>
-                </tbody>
-            </table>
+                    <hr style={{ height: "1px", background: "gray" }} />
+                    <h4>Total Price : Rp. {totalPrice}</h4>
+
+                    <button className="btn btn-primary mt-4" disabled={disabled} onClick={() => checkout()}>Checkout</button>
+                    <Toast toastlist={toast} position="buttom-right" />
+                </div>
+            ) : (
+                <h1>No Data</h1>
+            )}
         </Fragment>
     )
 }

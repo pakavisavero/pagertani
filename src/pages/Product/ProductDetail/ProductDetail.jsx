@@ -41,7 +41,7 @@ function ProductDetail(props) {
 
     return (
         <Fragment>
-            <img className={`mb-5 ${styles.product__image__detail}`} src={state.image} alt="" />
+            <img className={`mb-5 ${styles.product__image__detail}`} src={`/images/${state.image}`} alt="" />
 
             <CustomLabel name="Nama Produk" />
             <input name="name" type="text" className={`form-control mb-3 ${styles.product__title}`} defaultValue={state.name} onChange={handleOnChange}/>

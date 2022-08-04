@@ -12,7 +12,6 @@ function App() {
 
   const getCart = () => {
     axios.get("http://127.0.0.1:8000/api/v1/carts").then((res) => {
-      console.log(res.data["data"]);
       setCart([...res.data["data"]]);
       
     }).catch(function (error) {
