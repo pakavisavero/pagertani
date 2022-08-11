@@ -35,7 +35,11 @@ function QuotaDetail(props) {
 
 		if (amount > selected.av) {
 			setToast([ ShowToast('danger', `${selected.name} Out of stock!`) ]);
+			document.getElementById(`product-${id}`).value = selected.amount;
+		}
 
+		if (amount < 0) {
+			setToast([ ShowToast('danger', `Amount failed!`) ]);
 			document.getElementById(`product-${id}`).value = selected.amount;
 		}
 
