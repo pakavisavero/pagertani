@@ -1,0 +1,4 @@
+.dropShadow {
+    box-shadow: 0px 7px 5px #F0EBE3;
+    z-index: 999;
+}

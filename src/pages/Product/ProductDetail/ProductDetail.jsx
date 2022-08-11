@@ -56,7 +56,7 @@ function ProductDetail(props) {
             <input name="capacity" type="number" className={`form-control mb-3 ${styles.product__capacity}`} defaultValue={state.capacity} onChange={handleOnChange}/>
 
             <button className={`btn btn-secondary ${styles.buttonBack}`} onClick={() => navigate(-1)}>Back</button>
-            <button className="btn btn-primary" onClick={handleOnUpdate} >Update</button>
+            <button className="btn btn-primary" onClick={handleOnUpdate}>Update</button>
         </Fragment>
     );
 }

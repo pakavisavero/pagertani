@@ -44,7 +44,6 @@ function ProductCard(props) {
 
 
     const onAddCart = (id, val) => {
-        console.log(cart);
         let status = false;
         if (cart.length != 0) {
             cart.filter((c, i) => {

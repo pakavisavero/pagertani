@@ -49,6 +49,11 @@ function App() {
                     Quotas
                   </li>
                 </NavLink>
+                <NavLink className="text-link" to='/orders'>
+                  <li className="nav-link">
+                    Orders
+                  </li>
+                </NavLink>
                 
               </ul>
               <Link to={'/cart'}>

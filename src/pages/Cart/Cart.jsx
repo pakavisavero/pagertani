@@ -7,21 +7,22 @@ import ShowToast from "../../component/toast/ShowToast";
 const { Component, Fragment, useContext, useState, useEffect } = require("react");
 
 function Cart(props) {
-    const { cart, setCart } = useContext(CartValue);
+    const {cart, setCart } = useContext(CartValue);
     const [toast, setToast] = useState([]);
     const [check, setCheck] = useState([]);
     const [totalPrice, setTotalPrice] = useState(0);
+    const [note, setNote] = useState("");
     const [disabled, setDisabled] = useState(true);
 
     useEffect(() => {
-        if (check.length > 0) {
+        if (check.length > 0 && note != "") {
             setDisabled(false);
         } else {
             setDisabled(true);
         }
 
         console.log(check);
-    }, [check]);
+    }, [check, note, disabled]);
 
     const getCart = () => {
         axios.get("http://127.0.0.1:8000/api/v1/carts").then((res) => {
@@ -36,7 +37,6 @@ function Cart(props) {
             id: c.id
 
         }).then((res) => {
-            console.log("Masuk sini");
             setToast([ShowToast('success', "Delete data succeed!")]);
             setTotalPrice(prev => prev - (c.price * c.amount));
             getCart();
@@ -65,10 +65,13 @@ function Cart(props) {
 
     const checkout = () => { 
         axios.post("http://127.0.0.1:8000/api/v1/checkout", {
-            id: check
+            id: check,
+            note: note,
 
         }).then((res) => {
             setToast([ShowToast('success', "Checkout succeed!")]);
+            setCheck([]);
+            setNote([]);
             getCart();
 
         }).catch(function (error) {
@@ -118,16 +121,28 @@ function Cart(props) {
                             }
                         </tbody>
                     </table>
+                        
+                    {
+                        check.length > 0 && (
+                            <>
+                                <div>
+                                    <hr style={{ height: "1px", background: "gray" }} />
+                                    <h4>Total Price : Rp. {totalPrice}</h4>
+                                </div>
+                                <div>
+                                    <label style={{"width": "100%"}} className="mt-5 mb-2">Notes :</label>
+                                    <textarea className="form-control" name="note" id="note" cols="30" rows="5" onChange={(e) => setNote(e.target.value)}></textarea>
+                                </div>
+                                <button className="btn btn-primary mt-4" disabled={disabled} onClick={() => checkout()}>Checkout</button>
+                            </>
+                        ) 
+                    }
 
-                    <hr style={{ height: "1px", background: "gray" }} />
-                    <h4>Total Price : Rp. {totalPrice}</h4>
-
-                    <button className="btn btn-primary mt-4" disabled={disabled} onClick={() => checkout()}>Checkout</button>
-                    <Toast toastlist={toast} position="buttom-right" />
                 </div>
             ) : (
-                <h1>No Data</h1>
-            )}
+                <h1>No data in Cart</h1>
+                )}
+            <Toast toastlist={toast} position="buttom-right" />
         </Fragment>
     )
 }
