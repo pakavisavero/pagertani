@@ -2,6 +2,8 @@ import axios from 'axios';
 import React, { Fragment, useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router';
 import CustomLabel from '../../../component/CustomLabel';
+import ShowToast from '../../../component/toast/ShowToast';
+import Toast from '../../../component/toast/Toast';
 import styles from './QuotaDetail.module.css';
 
 function QuotaDetail(props) {
@@ -9,29 +11,43 @@ function QuotaDetail(props) {
 	const { state } = useLocation();
 	const [ quota, setQuota ] = useState([]);
 	const [ product, setProduct ] = useState([]);
+	const [ toast, setToast ] = useState([]);
 
-	useEffect(() => {
-		axios
-			.get(`http://127.0.0.1:8000/api/v1/quota/${state.rt.id}`)
-			.then((res) => {
-				setQuota([ ...res.data['data'] ]);
-				setProduct([ ...res.data['data'] ]);
-			})
-			.catch(function(error) {
-				console.log(error);
-			});
-	}, []);
+	useEffect(
+		() => {
+			axios
+				.get(`http://127.0.0.1:8000/api/v1/quota/${state.rt.id}`)
+				.then((res) => {
+					setQuota([ ...res.data['data'] ]);
+					setProduct([ ...res.data['data'] ]);
+				})
+				.catch(function(error) {
+					console.log(error);
+				});
+		},
+		[ quota ]
+	);
 
 	const handleOnChangeInput = (e) => {
-		let id = e.target.name;
-		let amount = e.target.value;
+		let id = parseInt(e.target.name);
+		let amount = parseInt(e.target.value);
+		const selected = product.filter((p) => p.id == id)[0];
+
+		if (amount > selected.av) {
+			setToast([ ShowToast('danger', `${selected.name} Out of stock!`) ]);
+
+			document.getElementById(`product-${id}`).value = selected.amount;
+		}
 
 		const newItem = product.filter((p) => p.id != id);
 		setProduct([
 			...newItem,
 			{
 				id: id,
-				amount: amount
+				name: selected.name,
+				av: selected.av,
+				amount: amount,
+				used: selected.used
 			}
 		]);
 	};
@@ -65,6 +81,7 @@ function QuotaDetail(props) {
 								<td>
 									<input
 										name={q.id}
+										id={`product-${q.id}`}
 										className="form-control"
 										type="number"
 										defaultValue={q.amount}
@@ -87,6 +104,8 @@ function QuotaDetail(props) {
 					Update
 				</button>
 			</div>
+
+			<Toast toastlist={toast} position="buttom-right" />
 		</Fragment>
 	);
 }

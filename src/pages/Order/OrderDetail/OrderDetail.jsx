@@ -53,7 +53,7 @@ const OrderDetail = (props) => {
 									<td>
 										<img className={styles.product__image} src={`/images/${od.image}`} />
 									</td>
-									<td>{od.amount}</td>
+									<td>{od.amount} PACK</td>
 									<td>{od.total_price}</td>
 									<td>{od.product}</td>
 									<td>
