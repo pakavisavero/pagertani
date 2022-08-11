@@ -110,7 +110,7 @@ function Cart(props) {
                                             </td>
                                             <td>{c.name}</td>
                                             <td>Rp. {c.price}</td>
-                                            <td>{c.amount}{c.type}</td>
+                                            <td>{c.amount} {c.type}</td>
                                             <td>Rp. {c.price * c.amount}</td>
                                             <td>
                                                 <button onClick={() => deleteCart(c)} className="btn btn-secondary btn-sm">Delete</button>
