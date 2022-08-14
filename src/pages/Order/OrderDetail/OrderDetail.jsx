@@ -54,7 +54,7 @@ const OrderDetail = (props) => {
 										<img className={styles.product__image} src={`/images/${od.image}`} />
 									</td>
 									<td>{od.amount} PACK</td>
-									<td>{od.total_price}</td>
+									<td>Rp. {od.total_price}</td>
 									<td>{od.product}</td>
 									<td>
 										<span class={`badge text-white bg-${getStatusBadge(od.priority_id)}`}>

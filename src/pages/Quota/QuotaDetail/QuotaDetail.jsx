@@ -13,20 +13,21 @@ function QuotaDetail(props) {
 	const [ product, setProduct ] = useState([]);
 	const [ toast, setToast ] = useState([]);
 
-	useEffect(
-		() => {
-			axios
-				.get(`http://127.0.0.1:8000/api/v1/quota/${state.rt.id}`)
-				.then((res) => {
-					setQuota([ ...res.data['data'] ]);
-					setProduct([ ...res.data['data'] ]);
-				})
-				.catch(function(error) {
-					console.log(error);
-				});
-		},
-		[ quota ]
-	);
+	const getQuotaFromAPI = () => {
+		axios
+			.get(`http://127.0.0.1:8000/api/v1/quota/${state.rt.id}`)
+			.then((res) => {
+				setQuota([ ...res.data['data'] ]);
+				setProduct([ ...res.data['data'] ]);
+			})
+			.catch(function(error) {
+				console.log(error);
+			});
+	};
+
+	useEffect(() => {
+		getQuotaFromAPI();
+	}, []);
 
 	const handleOnChangeInput = (e) => {
 		let id = parseInt(e.target.name);
@@ -34,7 +35,7 @@ function QuotaDetail(props) {
 		const selected = product.filter((p) => p.id == id)[0];
 
 		if (amount > selected.av) {
-			setToast([ ShowToast('danger', `${selected.name} Out of stock!`) ]);
+			setToast([ ShowToast('warning', `${selected.name} Out of stock!`) ]);
 			document.getElementById(`product-${id}`).value = selected.amount;
 		}
 
@@ -48,6 +49,7 @@ function QuotaDetail(props) {
 			...newItem,
 			{
 				id: id,
+				product_id: selected.product_id,
 				name: selected.name,
 				av: selected.av,
 				amount: amount,
@@ -57,7 +59,21 @@ function QuotaDetail(props) {
 	};
 
 	const handleSubmit = () => {
-		console.log(product);
+		const finalProduct = product.map((p) => ({
+			...p,
+			av: p.av - p.amount
+		}));
+
+		axios
+			.post(`http://127.0.0.1:8000/api/v1/quota`, {
+				product: finalProduct
+			})
+			.then((res) => {
+				getQuotaFromAPI();
+			})
+			.catch(function(error) {
+				console.log(error);
+			});
 	};
 
 	return (
